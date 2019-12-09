@@ -1,41 +1,78 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-	Licensed to the Apache Software Foundation (ASF) under one or more
-	contributor license agreements.  See the NOTICE file distributed with
-	this work for additional information regarding copyright ownership.
-	The ASF licenses this file to You under the Apache License, Version 2.0
-	(the "License"); you may not use this file except in compliance with
-	the License.  You may obtain a copy of the License at
-	
-	http://www.apache.org/licenses/LICENSE-2.0
-	
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
--->
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	You under the Apache License, Version 2.0 (the "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <!-- A simple class that is initialized by Spring -->
-    <bean id="com.acme.ocr.Demo" class="com.acme.ocr.platformsample.Demo" init-method="init" />
+	<!-- 
+	<bean id="acme.scannedDocumentAspect"
+		class="com.acme.ocr.alf.ScannedDocumentAspect" init-method="init">
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="renditionService" ref="RenditionService" />
+		<property name="transactionService" ref="TransactionService" />
+	</bean>
+	 -->
+	
+	<!-- custom transformer -->
+	<!-- ref: content-services-context.xml -->
+	<bean id="transformer.AwsTextractTransformer"
+		class="com.acme.ocr.alf.AwsTextractTransformer"
+		parent="baseContentTransformer">
+		<property name="nodeService" ref="NodeService" />
+		<property name="awsTextractService" ref="acme.awsTextractService" />
+	</bean>
 
-    <!-- A simple module component that will be executed once.
-         Note. this module component will only be executed once, and then there will be an entry for it in the Repo DB.
-         So doing for example $ mvn clean install alfresco:run twice will only execute this component the first time.
-         You need to remove /alf_data_dev for it to be executed again. -->
-    <bean id="com.acme.ocr.DemoComponent" class="com.acme.ocr.platformsample.DemoComponent" parent="module.baseComponent" >
-        <property name="moduleId" value="alf-aws-textract" />  <!-- See module.properties -->
-        <property name="name" value="DemoComponent" />
-        <property name="description" value="A demonstration component" />
-        <property name="sinceVersion" value="1.0" />
-        <property name="appliesFromVersion" value="0.99" /> <!-- 1.0 would not work here when using SNAPSHOT version in project  -->
-        <property name="nodeService" ref="NodeService" />
-        <property name="nodeLocatorService" ref="nodeLocatorService" />
+	<bean id="acme.awsTextractService" class="com.acme.ocr.alf.AwsTextractService">
+		<property name="endpoint" value="${pdf.generator.url}" />
+	</bean>
+
+	<!-- custom rendition (thumbnail) -->
+	<!-- ref: thumbnail-service-context.xml -->
+	<!-- 
+    <bean id="thumbnailDefinitionPDFAwsTextract" class="org.alfresco.repo.thumbnail.ThumbnailDefinition">
+        <property name="name" value="pdf-aws-textract" />
+        <property name="mimetype" value="application/pdf" />
+        <property name="transformationOptions">
+            <bean class="org.alfresco.repo.content.transform.swf.SWFTransformationOptions">
+                <property name="flashVersion" value="9" />
+            </bean>
+        </property>
     </bean>
+	 -->
 
-    
+	<!-- override to register custom rendition (thumbnail) -->
+	<!-- 
+    <bean id="acme.baseThumbnailRegistry" abstract="true">
+        <property name="contentService" ref="ContentService"/>
+        <property name="renditionService" ref="renditionService" />
+        <property name="transactionService" ref="TransactionService" />
+        <property name="tenantAdminService" ref="tenantAdminService" />
+        <property name="redeployStaticDefsOnStartup" value="${system.thumbnail.redeployStaticDefsOnStartup}" />
+        <property name="thumbnailDefinitions">
+            <list>
+                <ref bean="thumbnailDefinitionMedium" />
+                <ref bean="thumbnailDefinitionDoclib" />
+                <ref bean="thumbnailDefinitionImgpreview" />
+                <ref bean="thumbnailDefinitionAvatar" />
+                <ref bean="thumbnailDefinitionAvatar32" />
+                <ref bean="thumbnailDefinitionPDFpreview" />
+                <ref bean="thumbnailDefinitionWebpreview" />
+                <ref bean="thumbnailDefinitionPDFAwsTextract" />
+            </list>
+        </property>
+        <property name="thumbnailRenditionConvertor" ref="thumbnailRenditionConvertor" />
+    </bean>
+    <alias name="acme.baseThumbnailRegistry" alias="baseThumbnailRegistry" />
+	 -->
+	
 </beans>

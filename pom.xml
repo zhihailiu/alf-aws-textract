@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.acme</groupId>
     <artifactId>alf-aws-textract</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <name>alf-aws-textract Platform Jar Module - SDK 3</name>
     <description>Platform JAR Module (to be included in the alfresco.war) - SDK 3</description>
     <packaging>jar</packaging>
@@ -50,8 +50,8 @@
         <env>local</env>
 
         <!-- Compile with Java 7, default is 5 -->
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco platform.
@@ -78,6 +78,24 @@
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-repository</artifactId>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-textract</artifactId>
+            <version>1.11.637</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+
 
         <!-- Bring in Alfresco RAD so we get access to AlfrescoTestRunner classes -->
         <dependency>
@@ -130,11 +148,11 @@
                     <!-- This is a platform extension JAR, so we need the platform webapp (alfresco.war) -->
                     <enablePlatform>true</enablePlatform>
                     <!-- Enable Solr so we can use search, our Repo extension probably need search -->
-                    <enableSolr>true</enableSolr>
+                    <enableSolr>false</enableSolr>
                     <!-- We don't need the share.war if we don't have any UI extensions -->
                     <enableShare>false</enableShare>
                     <!-- Enable the REST API Explorer -->
-                    <enableApiExplorer>true</enableApiExplorer>
+                    <enableApiExplorer>false</enableApiExplorer>
 
                     <!--
                        JARs and AMPs that should be overlayed/applied to the Platform/Repository WAR
